@@ -1,5 +1,6 @@
+import { UpdateTaskStatusDto } from './dto/updateTaskStatus.dto';
 import { TasksFilterDto } from './dto/tasksFilter.dto';
-import { Task, TaskStatus } from './task.modal';
+import { Task } from './task.modal';
 import { TasksService } from './tasks.service';
 import {
   Body,
@@ -7,6 +8,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -23,8 +25,8 @@ export class TasksController {
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Task {
-    return this.tasksService.getTaskById(Number(id));
+  getTaskById(@Param('id', ParseIntPipe) id: number): Task {
+    return this.tasksService.getTaskById(id);
   }
 
   @Post('/')
@@ -33,15 +35,17 @@ export class TasksController {
   }
 
   @Delete('/:id')
-  deleteTask(@Param('id') id: string) {
-    return this.tasksService.deleteTask(Number(id));
+  deleteTask(@Param('id', ParseIntPipe) id: number) {
+    return this.tasksService.deleteTask(id);
   }
 
   @Patch('/:id/status')
   updateStatus(
-    @Param('id') id: string,
-    @Body('status') status: TaskStatus,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ): Task {
-    return this.tasksService.updateStatus(Number(id), status);
+    const { status } = updateTaskStatusDto;
+
+    return this.tasksService.updateStatus(id, status);
   }
 }
